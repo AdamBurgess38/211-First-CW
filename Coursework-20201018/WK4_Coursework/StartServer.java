@@ -1,16 +1,113 @@
 import java.util.*;
-public class StartServer {
-	Buffer b; //Creation of buffer object  
-	
 
-    public StartServer(int bufferSize) { //Creates execution scenario between user and webservers on buffer
+import javax.crypto.SealedObject;
+
+
+public class StartServer {
+	Buffer buffer; //Creation of buffer object  
+    Semaphore semaphoreFull;
+    Semaphore semaphoreEmpty;
+    
+    
+    
+
+
+    public StartServer(int bufferSize, int numElements, int numServers, int numUser) { //Creates execution scenario between user and webservers on buffer
 
         long startTime = System.currentTimeMillis();
 
         //Instantiate all objects (webserver, users, buffer)
-        b = new Buffer(bufferSize);
+        buffer = new Buffer(bufferSize);
+        semaphoreFull = new Semaphore(0);
+        semaphoreEmpty = new Semaphore(3);
 
         //Equally subdivide user inputted elements across all user objects
+        
+        int elementsPerUser[] = new int[numUser];
+        int elementsPerServer[] = new int[numServers];
+        int remU = numElements % numUser;
+        int remS = numElements % numServers;
+        int numElementsUser = numElements/numUser;
+        int numElementsServer = numElements/numServers;
+        int remainderDistributed = 0;
+        for(int i = 0; i<numUser; i++)
+        {
+            elementsPerUser[i] = numElementsUser;
+        }
+        int x = 0;
+        while(remainderDistributed != remU)
+        {
+            elementsPerUser[x] += 1;
+            if(x == elementsPerUser.length-1)
+            {
+                x = 0;
+            }
+            else
+                x++;
+            remainderDistributed++; 
+        }
+
+
+        for(int i = 0; i<numServers; i++)
+        {
+            elementsPerServer[i] = numElementsServer;
+        }
+        x = 0;
+        remainderDistributed = 0;
+        while(remainderDistributed != remS)
+        {
+            elementsPerServer[x] += 1;
+            if(x == elementsPerServer.length-1)
+            {
+                x = 0;
+            }
+            else
+                x++;
+            remainderDistributed++; 
+        }
+        User[] users = new User[numUser];
+        Webserver[] servers = new Webserver[numServers];
+        Thread[] threads = new Thread[numUser+numServers];
+        int y = 0;
+        for(int i = 0; i<numUser; i++)
+        {
+            System.out.println(elementsPerUser[i]);
+            users[i] = new User(i, elementsPerUser[i], buffer, semaphoreEmpty, semaphoreFull);
+            threads[y] = new Thread(users[i]);
+            y++;
+        }
+        for(int i = 0; i<numServers; i++)
+        {
+            System.out.println(elementsPerServer[i]);
+            servers[i] = new Webserver(i, buffer,elementsPerServer[i], semaphoreEmpty, semaphoreFull);
+        }
+       
+        for(int i = 0 ; i<numServers; i++)
+        {
+            threads[y] = new Thread(servers[i]);
+            y++;
+        }
+
+        
+        for(int i = 0; i<numUser+numServers; i++)
+        {
+            threads[i].start();
+            
+        }
+
+        for(int i = 0; i<numUser+numServers;i++)
+        {
+         try
+         {
+            threads[i].join();
+         }
+         catch(Exception e){
+ 
+         }
+        }
+
+        
+        
 
         System.out.println("-----------------------");
 
@@ -38,6 +135,6 @@ public class StartServer {
 		numServers = scan.nextInt();
         System.out.println("Enter total number of elements");
 		totalElements = scan.nextInt();
-        StartServer start = new StartServer(buffersize);
+        StartServer start = new StartServer(buffersize,totalElements,numServers,numUsers);
     }
 }

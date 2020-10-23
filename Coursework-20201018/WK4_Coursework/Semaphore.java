@@ -1,7 +1,6 @@
 import java.util.*;
 public class Semaphore
-  {
-    
+{
     private int count;
     public Semaphore(int val)
     {
@@ -34,5 +33,7 @@ public class Semaphore
             count++;
             }
     } 
-  }
+    
+    
+}
 
