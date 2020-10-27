@@ -1,39 +1,36 @@
-import java.util.*;
-public class Semaphore
-{
+public class Semaphore {
     private int count;
-    public Semaphore(int val)
+
+
+    public Semaphore(int n)
     {
-        count = val;// Should check it’s >= 0
+      count = n;
     }
 
-    public synchronized void accquire()           
-    {               
-        if(count > 0)         
+
+    public synchronized void accquire()
     {
-        count--;
-    }
-        else
-    {
-    try{                                     
-        wait();
-        }  
-        catch (InterruptedException e){e.printStackTrace();}
-            }   
-    }
- 
-    public synchronized void release()      
-     {      
-        if(count <= 0)
-        {
-            notify();
+      count--;
+      if(count <0)
+      {
+        try{
+          wait();
         }
-        else
-            {
-            count++;
-            }
-    } 
-    
-    
-}
+        catch(InterruptedException e)
+        {
+          e.printStackTrace();
+        }
+      }
+    }
 
+
+    public synchronized void release()
+    {
+      count++;
+      if(count <= 0)
+      {
+        notify();
+      }
+    }
+  
+  }

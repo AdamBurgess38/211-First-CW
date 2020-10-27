@@ -1,12 +1,13 @@
 import java.util.*;
 
-import javax.crypto.SealedObject;
+
 
 
 public class StartServer {
 	Buffer buffer; //Creation of buffer object  
     Semaphore semaphoreFull;
     Semaphore semaphoreEmpty;
+    Semaphore mutex = new Semaphore(1);
     
     
     
@@ -18,7 +19,7 @@ public class StartServer {
 
         //Instantiate all objects (webserver, users, buffer)
         buffer = new Buffer(bufferSize);
-        semaphoreFull = new Semaphore(0);
+        semaphoreFull = new Semaphore(3);
         semaphoreEmpty = new Semaphore(3);
 
         //Equally subdivide user inputted elements across all user objects
@@ -72,14 +73,14 @@ public class StartServer {
         for(int i = 0; i<numUser; i++)
         {
             System.out.println(elementsPerUser[i]);
-            users[i] = new User(i, elementsPerUser[i], buffer, semaphoreEmpty, semaphoreFull);
+            users[i] = new User(i, elementsPerUser[i], buffer, semaphoreEmpty, semaphoreFull, mutex);
             threads[y] = new Thread(users[i]);
             y++;
         }
         for(int i = 0; i<numServers; i++)
         {
             System.out.println(elementsPerServer[i]);
-            servers[i] = new Webserver(i, buffer,elementsPerServer[i], semaphoreEmpty, semaphoreFull);
+            servers[i] = new Webserver(i, buffer,elementsPerServer[i], semaphoreEmpty, semaphoreFull, mutex);
         }
        
         for(int i = 0 ; i<numServers; i++)

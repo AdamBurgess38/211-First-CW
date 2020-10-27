@@ -7,7 +7,7 @@ public class Barrier {
             e.printStackTrace();
         }
     }
-    public synchronized void resume_one ()
+    public synchronized void resumeAll()
     {
         notifyAll();
     }
