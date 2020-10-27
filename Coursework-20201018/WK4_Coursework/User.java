@@ -29,7 +29,7 @@ public class User implements Runnable {
     int num = num_elements;
     int n = 0;// Add element to buffer, element value iterates from 0, 1, 2 .... num_elements
     while (num > 0) {
-      empty.accquire();
+      full.accquire();
       
       mutex.accquire();
         if (buf.getBufferFull())
@@ -47,7 +47,7 @@ public class User implements Runnable {
         }
       mutex.release();
       
-      empty.release();
+      full.release();
       
     }
     System.out.println("User" + ID + " has produced a total of " + num_elements + "Elements");
