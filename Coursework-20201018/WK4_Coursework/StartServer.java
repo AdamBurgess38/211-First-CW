@@ -5,8 +5,8 @@ import java.util.*;
 
 public class StartServer {
 	Buffer buffer; //Creation of buffer object  
-    Semaphore semaphoreFull;
-    Semaphore semaphoreEmpty;
+    Barrier barrier = new Barrier();
+    Semaphore semaphore;
     Semaphore mutex = new Semaphore(1);
     
     
@@ -19,8 +19,8 @@ public class StartServer {
 
         //Instantiate all objects (webserver, users, buffer)
         buffer = new Buffer(bufferSize);
-        semaphoreFull = new Semaphore(3);
-        semaphoreEmpty = new Semaphore(3);
+        
+        semaphore = new Semaphore(3);
 
         //Equally subdivide user inputted elements across all user objects
         
@@ -55,6 +55,7 @@ public class StartServer {
         }
         x = 0;
         remainderDistributed = 0;
+
         while(remainderDistributed != remS)
         {
             elementsPerServer[x] += 1;
@@ -73,14 +74,14 @@ public class StartServer {
         for(int i = 0; i<numUser; i++)
         {
             System.out.println(elementsPerUser[i]);
-            users[i] = new User(i, elementsPerUser[i], buffer, semaphoreEmpty, semaphoreFull, mutex);
+            users[i] = new User(i, elementsPerUser[i], buffer, semaphore, mutex, barrier);
             threads[y] = new Thread(users[i]);
             y++;
         }
         for(int i = 0; i<numServers; i++)
         {
             System.out.println(elementsPerServer[i]);
-            servers[i] = new Webserver(i, buffer,elementsPerServer[i], semaphoreEmpty, semaphoreFull, mutex);
+            servers[i] = new Webserver(i, buffer,elementsPerServer[i], semaphore,mutex, barrier);
         }
        
         for(int i = 0 ; i<numServers; i++)
@@ -90,12 +91,31 @@ public class StartServer {
         }
 
         
+       
+        
+
+        System.out.println("-----------------------");
         for(int i = 0; i<numUser+numServers; i++)
         {
             threads[i].start();
             
         }
 
+
+        // for (User user : users) {
+        //     while(!user.getDone());
+            
+        // }
+        // for (Webserver server : servers) {
+        //  while(!server.getDone());
+            
+        //  }
+ 
+        //  barrier.resumeAll();
+         
+ 
+        
+         
         for(int i = 0; i<numUser+numServers;i++)
         {
          try
@@ -106,19 +126,22 @@ public class StartServer {
  
          }
         }
-
+        for (User user : users) {
+                user.reportOutput();
+                
+            }
+            for (Webserver server : servers) {
+             server.reportOutput();
+                
+             }
         
-        
-
-        System.out.println("-----------------------");
-
         //Outputs the total number of elements added/removed from user and webserver		
 
         System.out.println("-----------------------");
         //System.out.println("Buffer has " + X + " elements remaining");			//Check to see buffer if all elements produced from users have been successfully removed by webservers
         System.out.println("-----------------------");
         //Checks if all users and web servers successfully finished
-
+        buffer.reportBufferCapacity();
         long endTime = System.currentTimeMillis();
         System.out.println("-----------------------");
         System.out.println("Program took " + (endTime - startTime) + " milliseconds to complete");

@@ -11,6 +11,7 @@ public class Buffer // Provides data and operations onto the fixed-length buffer
     private boolean bufferFull = false;
     private boolean bufferEmpty = true;
     
+    
     /**
      * Buffer creation, with n indicating the maximum capacity
      * @param n The max capacity of the buffer.
@@ -72,6 +73,12 @@ public class Buffer // Provides data and operations onto the fixed-length buffer
     {
         bufferEmpty = elements == 0;
         bufferFull = elements == (int)buf_size;
+    }
+
+
+    public void reportBufferCapacity()
+    {
+        System.out.println("Buffer has " + elements + " elements remaining");
     }
 
 

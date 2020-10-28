@@ -6,20 +6,20 @@ public class User implements Runnable {
   private int ID;
   private int num_elements;
   public static Buffer buf;
-  private Semaphore full;
-  private Semaphore empty;
-  
+  private Barrier barrier;
+  private Semaphore semaphore;
+  private boolean done = false;
   private Semaphore mutex;
 
-  public User(int id, int el, Buffer b, Semaphore s, Semaphore f, Semaphore l) // Created user will add a certain number of elements
+  public User(int id, int el, Buffer b, Semaphore s, Semaphore l, Barrier barrier) // Created user will add a certain number of elements
                                                                   // to the
   // buffer.
   {
     ID = id;
     num_elements = el;
     buf = b;
-    full = f;
-    empty = s;
+    this.barrier = barrier;
+    semaphore = s;
     mutex = l;
    
 
@@ -29,12 +29,12 @@ public class User implements Runnable {
     int num = num_elements;
     int n = 0;// Add element to buffer, element value iterates from 0, 1, 2 .... num_elements
     while (num > 0) {
-      full.accquire();
+      semaphore.accquire();
       
       mutex.accquire();
         if (buf.getBufferFull())
         {
-          System.out.println("Buffer full, user" + ID + "will now wait");
+          System.out.println("Buffer full, user " + ID + " will now wait");
           
           
       
@@ -46,13 +46,26 @@ public class User implements Runnable {
           num--;
         }
       mutex.release();
+     
+      semaphore.release();
       
-      full.release();
       
     }
-    System.out.println("User" + ID + " has produced a total of " + num_elements + "Elements");
     
+    done = true;
   }
+
+  public void reportOutput()
+  {
+    System.out.println("User" + ID + " has produced a total of " + num_elements + " Elements");
+  }
+
+  public boolean getDone()
+  {
+    return done;
+  }
+
+  
 
   public int getID() {
     return ID;
@@ -66,6 +79,8 @@ public class User implements Runnable {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+    //barrier.pause();
+    //reportOutput();
 
   }
 
