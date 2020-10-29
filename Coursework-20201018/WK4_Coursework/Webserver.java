@@ -4,20 +4,20 @@ import java.util.*;
 
 public class Webserver implements Runnable { // Web server removes elements from the buffer
   private int ID;
-  public static Buffer buf;
+  public Buffer buffer;
   private Semaphore semaphore;
-  private Barrier barrier;
+  
   private int num_elements;
   private Semaphore mutex ;
-  private Boolean done = false;
-  public Webserver(int id, Buffer b, int numEl, Semaphore s,Semaphore l, Barrier barrier) {
+  
+  public Webserver(int id, Buffer b, int numEl, Semaphore s,Semaphore l) {
     ID = id;
-    buf = b;
+    buffer = b;
     num_elements = numEl;
     semaphore = s;
    
     mutex = l;
-    this.barrier = barrier;
+ 
     
 
   }
@@ -31,7 +31,7 @@ public class Webserver implements Runnable { // Web server removes elements from
     while (num > 0) {
       semaphore.accquire();
       mutex.accquire();
-        if (buf.getBufferEmpty())
+        if (buffer.getBufferEmpty())
         {
          
           System.out.println("Buffer empty, Webserver " + ID + " will now wait");
@@ -40,7 +40,7 @@ public class Webserver implements Runnable { // Web server removes elements from
           
         }
         else{
-          buf.remove(this);
+          buffer.remove(this);
           num--;
         }   
         
@@ -52,7 +52,7 @@ public class Webserver implements Runnable { // Web server removes elements from
 
     }
     
-    done = true;
+    
   }
 
   public void reportOutput()
@@ -60,10 +60,7 @@ public class Webserver implements Runnable { // Web server removes elements from
     System.out.println("Webserver" + ID + " has produced a total of " + num_elements + " Elements");
   }
 
-  public boolean getDone()
-  {
-    return done;
-  }
+  
 
 
   
@@ -77,8 +74,7 @@ public class Webserver implements Runnable { // Web server removes elements from
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    //barrier.pause();
-    //reportOutput();
+    
       
 
 

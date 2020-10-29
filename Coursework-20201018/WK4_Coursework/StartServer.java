@@ -5,7 +5,7 @@ import java.util.*;
 
 public class StartServer {
 	Buffer buffer; //Creation of buffer object  
-    Barrier barrier = new Barrier();
+   
     Semaphore semaphore;
     Semaphore mutex = new Semaphore(1);
     
@@ -74,14 +74,14 @@ public class StartServer {
         for(int i = 0; i<numUser; i++)
         {
             System.out.println(elementsPerUser[i]);
-            users[i] = new User(i, elementsPerUser[i], buffer, semaphore, mutex, barrier);
+            users[i] = new User(i, elementsPerUser[i], buffer, semaphore, mutex);
             threads[y] = new Thread(users[i]);
             y++;
         }
         for(int i = 0; i<numServers; i++)
         {
             System.out.println(elementsPerServer[i]);
-            servers[i] = new Webserver(i, buffer,elementsPerServer[i], semaphore,mutex, barrier);
+            servers[i] = new Webserver(i, buffer,elementsPerServer[i], semaphore,mutex);
         }
        
         for(int i = 0 ; i<numServers; i++)

@@ -5,22 +5,21 @@ import java.util.*;
 public class User implements Runnable {
   private int ID;
   private int num_elements;
-  public static Buffer buf;
-  private Barrier barrier;
+  public Buffer buffer;
   private Semaphore semaphore;
-  private boolean done = false;
+
   private Semaphore mutex;
 
-  public User(int id, int el, Buffer b, Semaphore s, Semaphore l, Barrier barrier) // Created user will add a certain number of elements
-                                                                  // to the
+  public User(int id, int el, Buffer b, Semaphore s, Semaphore mu) // Created user will add a certain number of elements
+                                                                   // to the
   // buffer.
   {
-    ID = id;
-    num_elements = el;
-    buf = b;
-    this.barrier = barrier;
-    semaphore = s;
-    mutex = l;
+    this.ID = id;
+    this.num_elements = el;
+    this.buffer = b;
+
+    this.semaphore = s;
+    this.mutex = mu;
    
 
   }
@@ -32,7 +31,7 @@ public class User implements Runnable {
       semaphore.accquire();
       
       mutex.accquire();
-        if (buf.getBufferFull())
+        if (buffer.getBufferFull())
         {
           System.out.println("Buffer full, user " + ID + " will now wait");
           
@@ -41,7 +40,7 @@ public class User implements Runnable {
         }
         else
        {
-          buf.add(n,this);
+          buffer.add(n,this);
           n++;
           num--;
         }
@@ -52,7 +51,7 @@ public class User implements Runnable {
       
     }
     
-    done = true;
+    
   }
 
   public void reportOutput()
@@ -60,10 +59,7 @@ public class User implements Runnable {
     System.out.println("User" + ID + " has produced a total of " + num_elements + " Elements");
   }
 
-  public boolean getDone()
-  {
-    return done;
-  }
+  
 
   
 
