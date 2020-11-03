@@ -60,13 +60,11 @@ public class StartServer {
         Thread[] threads = new Thread[numUser + numServers];
         int y = 0;
         for (int i = 0; i < numUser; i++) {
-            System.out.println(elementsPerUser[i]);
             users[i] = new User(i, elementsPerUser[i], buffer, empty, full);
             threads[y] = new Thread(users[i]);
             y++;
         }
         for (int i = 0; i < numServers; i++) {
-            System.out.println(elementsPerServer[i]);
             servers[i] = new Webserver(i, buffer, elementsPerServer[i], empty, full);
         }
 
