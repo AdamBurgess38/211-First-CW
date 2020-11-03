@@ -4,16 +4,10 @@ import java.util.*;
 
 
 public class StartServer {
-	Buffer buffer; //Creation of buffer object  
-   
+    Buffer buffer; 
     Semaphore empty;
-    Semaphore mutex = new Semaphore(1);
     Semaphore full;
     
-    
-    
-
-
     public StartServer(int bufferSize, int numElements, int numServers, int numUser) { //Creates execution scenario between user and webservers on buffer
 
         long startTime = System.currentTimeMillis();
@@ -37,6 +31,7 @@ public class StartServer {
             elementsPerUser[i] = numElementsUser;
         }
         int x = 0;
+        //Even spread the remainder.
         while(remainderDistributed != remU)
         {
             elementsPerUser[x] += 1;
@@ -56,7 +51,7 @@ public class StartServer {
         }
         x = 0;
         remainderDistributed = 0;
-
+        //Even spread the remainder.
         while(remainderDistributed != remS)
         {
             elementsPerServer[x] += 1;
@@ -75,14 +70,14 @@ public class StartServer {
         for(int i = 0; i<numUser; i++)
         {
             System.out.println(elementsPerUser[i]);
-            users[i] = new User(i, elementsPerUser[i], buffer, empty, mutex,full);
+            users[i] = new User(i, elementsPerUser[i], buffer, empty,full);
             threads[y] = new Thread(users[i]);
             y++;
         }
         for(int i = 0; i<numServers; i++)
         {
             System.out.println(elementsPerServer[i]);
-            servers[i] = new Webserver(i, buffer,elementsPerServer[i], empty,mutex,full);
+            servers[i] = new Webserver(i, buffer,elementsPerServer[i], empty,full);
         }
        
         for(int i = 0 ; i<numServers; i++)

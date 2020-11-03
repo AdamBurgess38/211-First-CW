@@ -8,20 +8,16 @@ public class User implements Runnable {
   public Buffer buffer;
   private Semaphore empty;
   private Semaphore full;
-  private Semaphore mutex;
   private int num;
   private int n = 0;
 
-  public User(int id, int el, Buffer b, Semaphore s, Semaphore mu, Semaphore full) // Created user will add a certain number of elements
-                                                                   // to the
-  // buffer.
+  public User(int id, int el, Buffer b, Semaphore s,Semaphore full)
   {
     this.ID = id;
     this.num_elements = el;
     this.buffer = b;
     this.full = full;
     this.empty = s;
-    this.mutex = mu;
    
 
   }
@@ -35,23 +31,13 @@ public class User implements Runnable {
         System.out.println("Buffer full, user " + ID + " will now wait");
         
       }
-     
-      empty.accquire();
-      
-        //mutex.accquire();
-         
-          buffer.add(n,this);
-          
-            
-        //mutex.release();
+      //Tests if buffer is empty.
+      empty.accquire();  
+      buffer.add(n,this);        
+      //Allows another element to be removed
       full.release();
      
-    
-    
-      
-      
     }
-    
     
   }
 
@@ -80,11 +66,10 @@ public class User implements Runnable {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    //barrier.pause();
-    //reportOutput();
+    
 
   }
 
-  //Need condiotn here to check if buffer is full! Otherwise, continue the loop. IN ADD METHOD FORM W3.
+  
        
 }   

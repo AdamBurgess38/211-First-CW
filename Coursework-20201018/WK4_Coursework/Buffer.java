@@ -6,7 +6,7 @@ import java.util.*;
 public class Buffer // Provides data and operations onto the fixed-length buffer
 {
     private LinkedList<Object> buf_list;
-    private int elements; // Number of elements currently on the queue
+    private int elements; 
     private int buf_size;
     private boolean bufferFull = false;
     private boolean bufferEmpty = true;
@@ -87,7 +87,9 @@ public class Buffer // Provides data and operations onto the fixed-length buffer
         bufferFull = elements == (int)buf_size;
     }
 
-
+    /**
+     * Report the status of buffer
+     */
     public void reportBufferCapacity()
     {
         System.out.println("Buffer has " + elements + " elements remaining");

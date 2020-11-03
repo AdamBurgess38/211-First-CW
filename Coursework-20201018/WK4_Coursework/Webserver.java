@@ -8,19 +8,15 @@ public class Webserver implements Runnable { // Web server removes elements from
   private Semaphore empty;
   private Semaphore full;
   private int num_elements;
-  private Semaphore mutex ;
   int num;
   
-  public Webserver(int id, Buffer b, int numEl, Semaphore s,Semaphore l, Semaphore full) {
+  public Webserver(int id, Buffer b, int numEl, Semaphore empty, Semaphore full) 
+  {
     this.ID = id;
     this.buffer = b;
     this.num_elements = numEl;
-    this.empty = s;
+    this.empty = empty;
     this.full = full;
-    this.mutex = l;
- 
-    
-
   }
 
   public int getID() {
@@ -35,16 +31,13 @@ public class Webserver implements Runnable { // Web server removes elements from
         System.out.println("Buffer empty, Webserver " + ID + " will now wait");
         
       }
-      
+      //Tests if buffer is full.
       full.accquire();
     
        
-            buffer.remove(this);
+      buffer.remove(this);
        
-        
-        
-       // mutex.release();
-      
+      //Allows another element to be added.
       empty.release();
       
 
@@ -55,7 +48,7 @@ public class Webserver implements Runnable { // Web server removes elements from
 
   public void reportOutput()
   {
-    System.out.println("Webserver" + ID + " has produced a total of " + num_elements + " Elements");
+    System.out.println("Webserver" + ID + " has removed a total of " + num_elements + " Elements");
   }
 
 
