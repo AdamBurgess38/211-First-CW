@@ -6,47 +6,48 @@ public class User implements Runnable {
   private int ID;
   private int num_elements;
   public Buffer buffer;
-  private Semaphore semaphore;
-
+  private Semaphore empty;
+  private Semaphore full;
   private Semaphore mutex;
+  private int num;
+  private int n = 0;
 
-  public User(int id, int el, Buffer b, Semaphore s, Semaphore mu) // Created user will add a certain number of elements
+  public User(int id, int el, Buffer b, Semaphore s, Semaphore mu, Semaphore full) // Created user will add a certain number of elements
                                                                    // to the
   // buffer.
   {
     this.ID = id;
     this.num_elements = el;
     this.buffer = b;
-
-    this.semaphore = s;
+    this.full = full;
+    this.empty = s;
     this.mutex = mu;
    
 
   }
 
   public void add_elements() throws InterruptedException {
-    int num = num_elements;
-    int n = 0;// Add element to buffer, element value iterates from 0, 1, 2 .... num_elements
+    num = num_elements;
+    n = 0;// Add element to buffer, element value iterates from 0, 1, 2 .... num_elements
     while (num > 0) {
-      semaphore.accquire();
-      
-      mutex.accquire();
-        if (buffer.getBufferFull())
-        {
-          System.out.println("Buffer full, user " + ID + " will now wait");
-          
-          
-      
-        }
-        else
-       {
-          buffer.add(n,this);
-          n++;
-          num--;
-        }
-      mutex.release();
+      if(buffer.getBufferFull())
+      {
+        System.out.println("Buffer full, user " + ID + " will now wait");
+        
+      }
      
-      semaphore.release();
+      empty.accquire();
+      
+        //mutex.accquire();
+         
+          buffer.add(n,this);
+          
+            
+        //mutex.release();
+      full.release();
+     
+    
+    
       
       
     }
@@ -60,7 +61,11 @@ public class User implements Runnable {
   }
 
   
-
+  public void decreaseNum()
+  {
+    n++;
+    num--;
+  }
   
 
   public int getID() {

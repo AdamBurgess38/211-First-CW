@@ -6,8 +6,9 @@ import java.util.*;
 public class StartServer {
 	Buffer buffer; //Creation of buffer object  
    
-    Semaphore semaphore;
+    Semaphore empty;
     Semaphore mutex = new Semaphore(1);
+    Semaphore full;
     
     
     
@@ -19,8 +20,8 @@ public class StartServer {
 
         //Instantiate all objects (webserver, users, buffer)
         buffer = new Buffer(bufferSize);
-        
-        semaphore = new Semaphore(3);
+        full = new Semaphore(0);
+        empty = new Semaphore(bufferSize);
 
         //Equally subdivide user inputted elements across all user objects
         
@@ -74,14 +75,14 @@ public class StartServer {
         for(int i = 0; i<numUser; i++)
         {
             System.out.println(elementsPerUser[i]);
-            users[i] = new User(i, elementsPerUser[i], buffer, semaphore, mutex);
+            users[i] = new User(i, elementsPerUser[i], buffer, empty, mutex,full);
             threads[y] = new Thread(users[i]);
             y++;
         }
         for(int i = 0; i<numServers; i++)
         {
             System.out.println(elementsPerServer[i]);
-            servers[i] = new Webserver(i, buffer,elementsPerServer[i], semaphore,mutex);
+            servers[i] = new Webserver(i, buffer,elementsPerServer[i], empty,mutex,full);
         }
        
         for(int i = 0 ; i<numServers; i++)
@@ -102,16 +103,7 @@ public class StartServer {
         }
 
 
-        // for (User user : users) {
-        //     while(!user.getDone());
-            
-        // }
-        // for (Webserver server : servers) {
-        //  while(!server.getDone());
-            
-        //  }
- 
-        //  barrier.resumeAll();
+       
          
  
         
@@ -158,7 +150,8 @@ public class StartServer {
         System.out.println("Enter number of servers");
 		numServers = scan.nextInt();
         System.out.println("Enter total number of elements");
-		totalElements = scan.nextInt();
+        totalElements = scan.nextInt();
+        scan.close();
         StartServer start = new StartServer(buffersize,totalElements,numServers,numUsers);
     }
 }

@@ -10,6 +10,7 @@ public class Buffer // Provides data and operations onto the fixed-length buffer
     private int buf_size;
     private boolean bufferFull = false;
     private boolean bufferEmpty = true;
+    private Semaphore mutex = new Semaphore(1);
     
     
     /**
@@ -29,10 +30,15 @@ public class Buffer // Provides data and operations onto the fixed-length buffer
      */
     public  void add(int v, User user) 
     {
+        //Mutex attempts to lock, meaning only one thread can execute this method at a time.
+        mutex.accquire();
         elements++;
         buf_list.add(v);
         System.out.println("User " + user.getID() + " has added an element " + elements + "/" + buf_size);
         checkBufferStatus();  
+        user.decreaseNum();
+        mutex.release();
+        //Mutex releases, this allows another thread to enter.
     }
 
     
@@ -42,10 +48,16 @@ public class Buffer // Provides data and operations onto the fixed-length buffer
      */
     public  void remove(Webserver webServer)
     { 
+        //Mutex attempts to lock, meaning only one thread can execute this method at a time.
+        mutex.accquire();
         elements--;
         buf_list.removeLast();
         System.out.println("Webserver" + webServer.getID() + "has removed element" + elements + "/" + buf_size);
-        checkBufferStatus();   
+        checkBufferStatus(); 
+        webServer.decreaseNum();
+        mutex.release(); 
+        //Mutex releases, this allows another thread to enter.
+
     }
 
     /**
