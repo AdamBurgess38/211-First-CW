@@ -18,7 +18,10 @@ public class User implements Runnable {
         this.full = full;
         this.empty = s;
     }
-
+    /**
+     * Method to add all elements that User will add.
+     * @throws InterruptedException
+     */
     public void add_elements() throws InterruptedException {
         num = num_elements;
         n = 0;
@@ -33,18 +36,25 @@ public class User implements Runnable {
             full.release();
         }
     }
-
+    /**
+     * Reports what operations User has carried out
+     */
     public void reportOutput() {
         System.out.println("User" + ID + " has produced a total of " + num_elements + " Elements");
     }
 
-
+    /**
+     * Insures while loop doesn't run forever
+     */
     public void decreaseNum() {
         n++;
         num--;
     }
 
-
+    /**
+     * 
+     * @return User's ID
+     */
     public int getID() {
         return ID;
     }

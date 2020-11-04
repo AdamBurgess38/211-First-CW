@@ -17,11 +17,17 @@ public class Webserver implements Runnable { // Web server removes elements from
         this.empty = empty;
         this.full = full;
     }
-
+    /**
+     * 
+     * @return The Webservers ID.
+     */
     public int getID() {
         return ID;
     }
-
+    /**
+     * Method to remove all elements Webserver has been assigned.
+     * @throws InterruptedException
+     */
     public void removeElement() throws InterruptedException {
         num = num_elements;
         while (num > 0) {
@@ -38,11 +44,16 @@ public class Webserver implements Runnable { // Web server removes elements from
 
     }
 
+    /**
+     * Reports the operations Webserver has carried out.
+     */
     public void reportOutput() {
         System.out.println("Webserver" + ID + " has removed a total of " + num_elements + " Elements");
     }
 
-
+    /**
+     * Insures while loop doesn't run indefintetly.
+     */
     public void decreaseNum() {
         num--;
     }
